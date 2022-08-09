@@ -5,6 +5,7 @@ import {
   deleteRoom,
   updateRoom,
   getRoomByID,
+  updateRoomAvailability,
 } from "../controllers/room.js";
 import {
   adminProtect,
@@ -15,6 +16,7 @@ const roomsRoutes = Express.Router();
 roomsRoutes.get("/", getAllRooms);
 roomsRoutes.get("/:id", getRoomByID);
 roomsRoutes.post("/:hotelId", authMiddleware, adminProtect, createRoom);
+roomsRoutes.put("/availability/:id" , updateRoomAvailability)
 roomsRoutes.patch("/:id", authMiddleware, adminProtect, updateRoom);
 roomsRoutes.delete("/:id/:hotelId", authMiddleware, adminProtect, deleteRoom);
 
