@@ -6,6 +6,7 @@ const Featured = () => {
     "http://localhost:5000/api/v1/hotels/countByCity?cities=Galle"
   );
 
+  console.log(data);
   return (
     <div className="featured">
       {loading ? (

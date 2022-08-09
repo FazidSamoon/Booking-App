@@ -64,3 +64,14 @@ export const getAllRooms = async (req, res) => {
   const rooms = await roomModel.find({});
   res.status(200).json({ rooms });
 };
+
+export const updateRoomAvailability = async(req,res) => {
+  try {
+    await roomModel.updateOne({"roomNumbers._id" : req.params.id} , {
+      $push : {"unAvailableDates.$.unAvailableDates" : req.body.dates}
+    })
+    res.status(200).send("Room availability updated successfully")
+  } catch (error) {
+    
+  }
+}

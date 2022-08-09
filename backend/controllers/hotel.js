@@ -1,5 +1,6 @@
 import { notFound } from "../errors/not-found.js";
 import hotelModel from "../models/hotel.js";
+import roomModel from "../models/rooms.js";
 
 export const createHotel = async (req, res) => {
   try {
@@ -12,10 +13,12 @@ export const createHotel = async (req, res) => {
 };
 
 export const getAllHotels = async (req, res) => {
-  const {min , max , ...others} = req.query
+  const { min, max, ...others } = req.query;
   try {
-    const hotels = await hotelModel.find({...others , cheapestPrice: {$gt:min || 1 , $lt:max || 10000}}).limit(req.query.limit)
-    res.status(200).json({hotels})
+    const hotels = await hotelModel
+      .find({ ...others, cheapestPrice: { $gt: min || 1, $lt: max || 10000 } })
+      .limit(req.query.limit);
+    res.status(200).json(hotels);
   } catch (error) {
     console.log(error);
     throw new notFound(`Hotels not existed`);
@@ -30,7 +33,7 @@ export const getHotelByID = async (req, res, next) => {
     throw new notFound(`Hotel with id ${id} not existed`);
   }
 
-  res.status(200).json({ hotel });
+  res.status(200).json(hotel);
 };
 
 export const updateHotel = async (req, res) => {
@@ -63,7 +66,7 @@ export const countByCity = async (req, res) => {
         return hotelModel.countDocuments({ city: city });
       })
     );
-    res.json({ list });
+    res.json(list);
   } catch (error) {}
 };
 
@@ -73,7 +76,9 @@ export const countType = async (req, res) => {
     const villaCount = await hotelModel.countDocuments({ type: "villa" });
     const resortCount = await hotelModel.countDocuments({ type: "resort" });
     const cabinCount = await hotelModel.countDocuments({ type: "cabin" });
-    const apartmentCount = await hotelModel.countDocuments({ type: "apartment" });
+    const apartmentCount = await hotelModel.countDocuments({
+      type: "apartment",
+    });
     res.status(200).json([
       { type: "hotel", count: hotelCount },
       { type: "villa", count: villaCount },
@@ -85,4 +90,17 @@ export const countType = async (req, res) => {
     res.json({ error });
     console.log(error);
   }
+};
+
+export const getHotelRooms = async (req, res, next) => {
+  const { id } = req.params;
+  const hotel = await hotelModel.findById({ _id: id });
+
+  const list = await Promise.all(
+    hotel.rooms.map((room) => {
+      return roomModel.findById(room);
+    })
+  );
+
+  res.status(200).json(list);
 };
